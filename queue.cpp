@@ -432,9 +432,12 @@ byte * ByteQueue::CreatePutSpace(size_t &size)
 
 ByteQueue & ByteQueue::operator=(const ByteQueue &rhs)
 {
-	Destroy();
-	CopyFrom(rhs);
-	return *this;
+    if (&rhs != this)
+    {
+        Destroy();
+        CopyFrom(rhs);
+    }
+    return *this;
 }
 
 bool ByteQueue::operator==(const ByteQueue &rhs) const

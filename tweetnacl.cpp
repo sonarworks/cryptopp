@@ -515,7 +515,7 @@ int crypto_box_keypair(uint8_t *y,uint8_t *x)
 // and https://github.com/jedisct1/libsodium/commit/675149b9b8b66ff4.
 int crypto_box_beforenm(uint8_t *k,const uint8_t *y,const uint8_t *x)
 {
-  uint8_t s[32];
+  uint8_t s[32] = {};
   if(crypto_scalarmult(s,x,y) != 0) return -1;
   if(has_small_order(s) != 0) return -1;
   return crypto_core_hsalsa20(k,_0,s,sigma);
@@ -524,7 +524,7 @@ int crypto_box_beforenm(uint8_t *k,const uint8_t *y,const uint8_t *x)
 // Allow small order elements. Also see https://eprint.iacr.org/2017/806.pdf
 int crypto_box_beforenm_unchecked(uint8_t *k,const uint8_t *y,const uint8_t *x)
 {
-  uint8_t s[32];
+  uint8_t s[32] = {};
   if(crypto_scalarmult(s,x,y) != 0) return -1;
   return crypto_core_hsalsa20(k,_0,s,sigma);
 }
@@ -541,28 +541,28 @@ int crypto_box_open_afternm(uint8_t *m,const uint8_t *c,uint64_t d,const uint8_t
 
 int crypto_box(uint8_t *c, const uint8_t *m, uint64_t d, const uint8_t *n, const uint8_t *y, const uint8_t *x)
 {
-  uint8_t k[32];
+  uint8_t k[32] = {};
   if (crypto_box_beforenm(k, y, x) != 0) return -1;
   return crypto_box_afternm(c, m, d, n, k);
 }
 
 int crypto_box_unchecked(uint8_t *c, const uint8_t *m, uint64_t d, const uint8_t *n, const uint8_t *y, const uint8_t *x)
 {
-  uint8_t k[32];
+  uint8_t k[32] = {};
   crypto_box_beforenm_unchecked(k, y, x);
   return crypto_box_afternm(c, m, d, n, k);
 }
 
 int crypto_box_open(uint8_t *m,const uint8_t *c,uint64_t d,const uint8_t *n,const uint8_t *y,const uint8_t *x)
 {
-  uint8_t k[32];
+  uint8_t k[32] = {};
   if(crypto_box_beforenm(k,y,x) != 0) return -1;
   return crypto_box_open_afternm(m,c,d,n,k);
 }
 
 int crypto_box_open_unchecked(uint8_t *m,const uint8_t *c,uint64_t d,const uint8_t *n,const uint8_t *y,const uint8_t *x)
 {
-  uint8_t k[32];
+  uint8_t k[32] = {};
   crypto_box_beforenm_unchecked(k,y,x);
   return crypto_box_open_afternm(m,c,d,n,k);
 }

@@ -924,7 +924,7 @@
     <ClInclude Include="zinflate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="zlib.h">
+    <ClInclude Include="zlib_subst.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="chacha.h">

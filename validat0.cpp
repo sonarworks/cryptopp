@@ -15,7 +15,7 @@
 #include "files.h"
 #include "gf2n.h"
 #include "gzip.h"
-#include "zlib.h"
+#include "zlib_subst.h"
 #include "ida.h"
 #include "hex.h"
 #include "asn.h"

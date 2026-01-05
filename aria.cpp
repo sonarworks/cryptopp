@@ -290,6 +290,9 @@ void ARIA::Base::ProcessAndXorBlock(const byte *inBlock, const byte *xorBlock, b
 	else
 # endif  // CRYPTOPP_ENABLE_ARIA_SSSE3_INTRINSICS
 	{
+	    if (rk == nullptr) {
+            return;
+        }
 		outBlock[ 0] = (byte)(X1[ARIA_BRF(t[0],3)]   ) ^ rk[ 3];
 		outBlock[ 1] = (byte)(X2[ARIA_BRF(t[0],2)]>>8) ^ rk[ 2];
 		outBlock[ 2] = (byte)(S1[ARIA_BRF(t[0],1)]   ) ^ rk[ 1];

@@ -348,7 +348,7 @@ zdeflate.h
 zinflate.cpp
 zinflate.h
 zlib.cpp
-zlib.h
+zlib_subst.h
 Doxyfile
 GNUmakefile
 GNUmakefile-cross
