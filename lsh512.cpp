@@ -693,6 +693,7 @@ lsh_err lsh512_update(LSH512_Context* ctx, const lsh_u8* data, size_t databitlen
 		std::memcpy(ctx->last_block + remain_msg_byte, data, databytelen);
 		ctx->remain_databitlen += (lsh_uint)databitlen;
 		remain_msg_byte += (lsh_uint)databytelen;
+        (void)remain_msg_byte; // static analyzer has a false positive above
 		if (pos2){
 			ctx->last_block[remain_msg_byte] = data[databytelen] & ((0xff >> pos2) ^ 0xff);
 		}
@@ -705,7 +706,6 @@ lsh_err lsh512_update(LSH512_Context* ctx, const lsh_u8* data, size_t databitlen
 		compress(ctx, ctx->last_block);
 		data += more_byte;
 		databytelen -= more_byte;
-		remain_msg_byte = 0;
 		ctx->remain_databitlen = 0;
 	}
 

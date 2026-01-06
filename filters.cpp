@@ -874,8 +874,8 @@ size_t HashFilter::Put2(const byte *inString, size_t length, int messageEnd, boo
 	if (messageEnd)
 	{
 		{
-			size_t size;
-			m_space = HelpCreatePutSpace(*AttachedTransformation(), m_hashPutChannel, m_digestSize, m_digestSize, size = m_digestSize);
+			size_t size = m_digestSize;
+			m_space = HelpCreatePutSpace(*AttachedTransformation(), m_hashPutChannel, m_digestSize, m_digestSize, size);
 			m_hashModule.TruncatedFinal(m_space, m_digestSize);
 		}
 		FILTER_OUTPUT3(2, 0, m_space, m_digestSize, messageEnd, m_hashPutChannel);

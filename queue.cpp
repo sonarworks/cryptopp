@@ -455,6 +455,11 @@ byte * ByteQueue::CreatePutSpace(size_t &size)
 
 ByteQueue & ByteQueue::operator=(const ByteQueue &rhs)
 {
+    if (this == &rhs)
+    {
+        // Static analyzer assumes one might copy-assign to itself, so be it
+        return *this;
+    }
 	Destroy();
 	CopyFrom(rhs);
 	return *this;

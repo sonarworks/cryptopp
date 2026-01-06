@@ -504,6 +504,7 @@ size_t XTS_ModeBase::ProcessLastCipherBlock(byte *outString, size_t outLength, c
     ///// handle the full previous block /////
 
     inString -= blockSize;
+    (void)inString; // suppress not-read static analysis warning
     outString -= blockSize;
 
     // merge the tweak into the input block

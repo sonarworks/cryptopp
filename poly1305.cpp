@@ -141,6 +141,7 @@ void Poly1305_HashFinal(word32 h[5], word32 n[4], byte *mac, size_t size)
 	h1 = (word32)(t = (word64)h1 + (t >> 32) + n[1]);
 	h2 = (word32)(t = (word64)h2 + (t >> 32) + n[2]);
 	h3 = (word32)(t = (word64)h3 + (t >> 32) + n[3]);
+    (void)t; // suppress not-read static analysis warning
 
 	if (size >= 16)
 	{
@@ -219,7 +220,7 @@ template <class T>
 void Poly1305_Base<T>::Update(const byte *input, size_t length)
 {
 	CRYPTOPP_ASSERT((input && length) || !length);
-	if (!length) return;
+	if (!length || !input) return;
 
 	size_t rem, num = m_idx;
 	if (num)
@@ -335,7 +336,7 @@ void Poly1305TLS_Base::UncheckedSetKey(const byte *key, unsigned int length, con
 void Poly1305TLS_Base::Update(const byte *input, size_t length)
 {
 	CRYPTOPP_ASSERT((input && length) || !length);
-	if (!length) return;
+	if (!length || !input) return;
 
 	size_t rem, num = m_idx;
 	if (num)

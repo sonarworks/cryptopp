@@ -101,7 +101,10 @@ int crypto_verify_32(const byte *x,const byte *y)
 
 static void core(byte *out,const byte *in,const byte *k,const byte *c,int h)
 {
-  word32 w[16],x[16],y[16],t[4];
+  word32 w[16] = {};
+  word32 x[16] = {};
+  word32 y[16] = {};
+  word32 t[4] = {};
   int i,j,m;
 
   for(i=0; i<4; ++i) {
@@ -155,7 +158,8 @@ static const byte sigma[16] = {0x65,0x78,0x70,0x61,0x6E,0x64,0x20,0x33,0x32,0x2D
 
 int crypto_stream_salsa20_xor(byte *c,const byte *m,word64 b,const byte *n,const byte *k)
 {
-  byte z[16],x[64];
+  byte z[16] = {};
+  byte x[64] = {};
   word32 u,i;
   if (!b) return 0;
   for(i=0; i<16; ++i) z[i] = 0;
@@ -187,14 +191,14 @@ int crypto_stream_salsa20(byte *c,word64 d,const byte *n,const byte *k)
 
 int crypto_stream(byte *c,word64 d,const byte *n,const byte *k)
 {
-  byte s[32];
+  byte s[32] = {};
   crypto_core_hsalsa20(s,n,k,sigma);
   return crypto_stream_salsa20(c,d,n+16,s);
 }
 
 int crypto_stream_xor(byte *c,const byte *m,word64 d,const byte *n,const byte *k)
 {
-  byte s[32];
+  byte s[32] = {};
   crypto_core_hsalsa20(s,n,k,sigma);
   return crypto_stream_salsa20_xor(c,m,d,n+16,s);
 }
@@ -215,7 +219,12 @@ static const word32 minusp[17] = {
 
 int crypto_onetimeauth(byte *out,const byte *m,word64 n,const byte *k)
 {
-  word32 s,i,j,u,x[17],r[17],h[17],c[17],g[17];
+  word32 s,i,j,u;
+  word32 x[17] = {};
+  word32 r[17] = {};
+  word32 h[17] = {};
+  word32 c[17] = {};
+  word32 g[17] = {};
 
   for(j=0; j<17; ++j) r[j]=h[j]=0;
   for(j=0; j<16; ++j) r[j]=k[j];
@@ -268,7 +277,7 @@ int crypto_onetimeauth(byte *out,const byte *m,word64 n,const byte *k)
 
 int crypto_onetimeauth_verify(const byte *h,const byte *m,word64 n,const byte *k)
 {
-  byte x[16];
+  byte x[16] = {};
   crypto_onetimeauth(x,m,n,k);
   return crypto_verify_16(h,x);
 }
@@ -286,7 +295,7 @@ int crypto_secretbox(byte *c,const byte *m,word64 d,const byte *n,const byte *k)
 int crypto_secretbox_open(byte *m,const byte *c,word64 d,const byte *n,const byte *k)
 {
   int i;
-  byte x[32];
+  byte x[32] = {};
   if (d < 32) return -1;
   crypto_stream(x,32,n,k);
   if (crypto_onetimeauth_verify(c + 16,c + 32,d - 32,x) != 0) return -1;
@@ -350,7 +359,8 @@ static void pack25519(byte *o,const gf n)
 
 static int neq25519(const gf a, const gf b)
 {
-  byte c[32],d[32];
+  byte c[32] = {};
+  byte d[32] = {};
   pack25519(c,a);
   pack25519(d,b);
   return crypto_verify_32(c,d);
@@ -358,7 +368,7 @@ static int neq25519(const gf a, const gf b)
 
 static byte par25519(const gf a)
 {
-  byte d[32];
+  byte d[32] = {};
   pack25519(d,a);
   return d[0]&1;
 }
@@ -384,7 +394,8 @@ static void Z(gf o,const gf a,const gf b)
 
 static void M(gf o,const gf a,const gf b)
 {
-  sword64 i,j,t[31];
+  sword64 i,j;
+  sword64 t[31] = {};
   for(i=0; i<31; ++i) t[i]=0;
   for(i=0; i<16; ++i) for(j=0; j<16; ++j) t[i+j]+=a[i]*b[j];
   for(i=0; i<15; ++i) t[i]+=38*t[i+16];
@@ -459,8 +470,9 @@ static int has_small_order(const byte s[32])
 
 int crypto_scalarmult(byte *q,const byte *n,const byte *p)
 {
-  byte z[32];
-  sword64 x[80],r,i;
+  byte z[32] = {};
+    sword64 x[80] = {};
+  sword64 r,i;
   gf a,b,c,d,e,f;
   for(i=0; i<31; ++i) z[i]=n[i];
   z[31]=(n[31]&127)|64;
@@ -523,7 +535,7 @@ int crypto_box_keypair(byte *y,byte *x)
 // and https://github.com/jedisct1/libsodium/commit/675149b9b8b66ff4.
 int crypto_box_beforenm(byte *k,const byte *y,const byte *x)
 {
-  byte s[32];
+  byte s[32] = {};
   if(crypto_scalarmult(s,x,y) != 0) return -1;
   if(has_small_order(s) != 0) return -1;
   return crypto_core_hsalsa20(k,_0,s,sigma);
@@ -532,7 +544,7 @@ int crypto_box_beforenm(byte *k,const byte *y,const byte *x)
 // Allow small order elements. Also see https://eprint.iacr.org/2017/806.pdf
 int crypto_box_beforenm_unchecked(byte *k,const byte *y,const byte *x)
 {
-  byte s[32];
+  byte s[32] = {};
   if(crypto_scalarmult(s,x,y) != 0) return -1;
   return crypto_core_hsalsa20(k,_0,s,sigma);
 }
@@ -549,28 +561,28 @@ int crypto_box_open_afternm(byte *m,const byte *c,word64 d,const byte *n,const b
 
 int crypto_box(byte *c, const byte *m, word64 d, const byte *n, const byte *y, const byte *x)
 {
-  byte k[32];
+  byte k[32] = {};
   if (crypto_box_beforenm(k, y, x) != 0) return -1;
   return crypto_box_afternm(c, m, d, n, k);
 }
 
 int crypto_box_unchecked(byte *c, const byte *m, word64 d, const byte *n, const byte *y, const byte *x)
 {
-  byte k[32];
+  byte k[32] = {};
   crypto_box_beforenm_unchecked(k, y, x);
   return crypto_box_afternm(c, m, d, n, k);
 }
 
 int crypto_box_open(byte *m,const byte *c,word64 d,const byte *n,const byte *y,const byte *x)
 {
-  byte k[32];
+  byte k[32] = {};
   if(crypto_box_beforenm(k,y,x) != 0) return -1;
   return crypto_box_open_afternm(m,c,d,n,k);
 }
 
 int crypto_box_open_unchecked(byte *m,const byte *c,word64 d,const byte *n,const byte *y,const byte *x)
 {
-  byte k[32];
+  byte k[32] = {};
   crypto_box_beforenm_unchecked(k,y,x);
   return crypto_box_open_afternm(m,c,d,n,k);
 }
@@ -609,7 +621,11 @@ static const word64 K[80] =
 
 int crypto_hashblocks(byte *x,const byte *m,word64 n)
 {
-  word64 z[8],b[8],a[8],w[16],t;
+  word64 z[8] = {};
+  word64 b[8] = {};
+  word64 a[8] = {};
+  word64 w[16] = {};
+  word64 t;
   int i,j;
 
   for(i=0; i<8; ++i) z[i] = a[i] = dl64(x + 8 * i);
@@ -652,7 +668,8 @@ static const byte iv[64] = {
 
 int crypto_hash(byte *out,const byte *m,word64 n)
 {
-  byte h[64],x[256];
+  byte h[64] = {};
+  byte x[256] = {};
   word64 i,b = n;
 
   for(i=0; i<64; ++i) h[i] = iv[i];
@@ -736,7 +753,7 @@ static void scalarmult(gf p[4],gf q[4],const byte *s)
 
 static void scalarbase(gf p[4],const byte *s)
 {
-  gf q[4];
+  gf q[4] = {};
   set25519(q[0],X);
   set25519(q[1],Y);
   set25519(q[2],gf1);
@@ -746,8 +763,8 @@ static void scalarbase(gf p[4],const byte *s)
 
 int crypto_sign_keypair(byte *pk, byte *sk)
 {
-  byte d[64];
-  gf p[4];
+  byte d[64] = {};
+  gf p[4] = {};
   int i;
 
   randombytes(sk, 32);
@@ -765,8 +782,8 @@ int crypto_sign_keypair(byte *pk, byte *sk)
 
 int crypto_sign_sk2pk(byte *pk, const byte *sk)
 {
-  byte d[64];
-  gf p[4];
+  byte d[64] = {};
+  gf p[4] = {};
   // int i;
 
   // randombytes(sk, 32);
@@ -812,7 +829,8 @@ static void modL(byte *r,sword64 x[64])
 
 static void reduce(byte *r)
 {
-  sword64 x[64],i;
+  sword64 x[64] = {};
+  sword64 i;
   for(i=0; i<64; ++i) x[i] = (word64) r[i];
   for(i=0; i<64; ++i) r[i] = 0;
   modL(r,x);
@@ -820,9 +838,13 @@ static void reduce(byte *r)
 
 int crypto_sign(byte *sm,word64 *smlen,const byte *m,word64 n,const byte *sk)
 {
-  byte d[64],h[64],r[64];
-  word64 i; sword64 j,x[64];
-  gf p[4];
+  byte d[64] = {};
+  byte h[64] = {};
+  byte r[64] = {};
+  word64 i;
+  sword64 j;
+  sword64 x[64] = {};
+  gf p[4] = {};
 
   crypto_hash(d, sk, 32);
   d[0] &= 248;
@@ -889,8 +911,10 @@ static int unpackneg(gf r[4],const byte p[32])
 int crypto_sign_open(byte *m,word64 *mlen,const byte *sm,word64 n,const byte *pk)
 {
   word32 i;
-  byte t[32],h[64];
-  gf p[4],q[4];
+  byte t[32] = {};
+  byte h[64] = {};
+  gf p[4] = {};
+  gf q[4] = {};
 
   *mlen = ~W64LIT(0);
   if (n < 64) return -1;

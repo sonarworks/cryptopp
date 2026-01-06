@@ -800,6 +800,7 @@ void SHA1_HashMultipleBlocks_ARMV8(word32 *state, const word32 *data, size_t len
         ABCD = vsha1pq_u32(ABCD, E1, TMP1);
         TMP1 = vaddq_u32(MSG3, C3);
         MSG0 = vsha1su1q_u32(MSG0, MSG3);
+        (void)MSG0; // suppress not-read static analysis warning
 
         // Rounds 72-75
         E1 = vsha1h_u32(vgetq_lane_u32(ABCD, 0));
