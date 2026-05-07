@@ -30,7 +30,12 @@
 // Nearly all Intel's and AMD's have SSE. Enable it independent of SSE ASM and intrinsics.
 // ARM NEON and ARMv8 ASIMD only need natural alignment of an element in the vector.
 // Altivec through POWER7 need vector alignment. POWER8 and POWER9 relax the requirement.
-#if defined(CRYPTOPP_DISABLE_ASM)
+// Note: CRYPTOPP_DISABLE_ASM disables inline asm but the C++ fallback on x86/x64 is still
+// compiled with -O2/-O3, which auto-vectorizes memcpy in SHA256_HashBlock_CXX using aligned
+// SSE2 loads (movdqa). If the state array is only 8-byte aligned (BOOL_ALIGN16=0), those loads
+// fault. Keep 16-byte alignment on x86/x64 even when ASM is disabled — the padding/pointer
+// arithmetic in FixedSizeAllocatorWithCleanup does not use any inline asm.
+#if defined(CRYPTOPP_DISABLE_ASM) && !(CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32 || CRYPTOPP_BOOL_X64)
 	#define CRYPTOPP_BOOL_ALIGN16 0
 #elif (CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32 || CRYPTOPP_BOOL_X64 || \
        CRYPTOPP_BOOL_PPC32 || CRYPTOPP_BOOL_PPC64)
